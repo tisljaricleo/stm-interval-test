@@ -5,7 +5,7 @@ import misc.config as config
 
 
 def get_mass_center(m):
-    max_val = 0.2 * np.max(m)   # Filter: remove 20% of maximal value.
+    max_val = 0.2 * np.max(m)  # Filter: remove 20% of maximal value.
     m = np.where(m < max_val, 0, m)
     m = m / np.sum(m)
     # marginal distributions
@@ -16,6 +16,7 @@ def get_mass_center(m):
     cx = np.sum(dx * np.arange(X))
     cy = np.sum(dy * np.arange(Y))
     return int(cx), int(cy)
+
 
 def plot_heatmap(data, title, output='show', filename='image.png'):
     """
@@ -43,10 +44,11 @@ def plot_heatmap(data, title, output='show', filename='image.png'):
     if output == 'save':
         plt.savefig(filename, bbox_inches='tight')
 
+
 config.initialize_stm_setup()
 client = pymongo.MongoClient()
-db= client["SUMOSpeedTransitionDB"]
-mycol= db["SUMOspatialMatrixrel"]
+db = client["SUMOSpeedTransitionDB"]
+mycol = db["SUMOspatialMatrixrel"]
 
 data = list(mycol.find())
 for x in data:
@@ -65,8 +67,3 @@ for x in data:
 
         except ValueError:
             print()
-
-
-
-
-

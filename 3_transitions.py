@@ -60,24 +60,25 @@ def generate_transitions(routes):
                                 'year': r['year'],
                                 'interval': br + 1})
     try:
-        #spremi unutar collectiona
-        #intervali[br]["transitions"] = transitions
-        database.insertMany(db, "SUMOTransitionsNew", transitions)
-
+        # spremi unutar collectiona
+        # intervali[br]["transitions"] = transitions
+        database.insertMany(db, "{0}_{1}".format(config.SUMO_TRANS_COLL, scenario_name), transitions)
 
     except TypeError:
         print("prazna lista")
+
 
 print('Script {0} started ... '.format(__file__))
 t1 = get_time()
 config.initialize_paths()
 config.initialize_stm_setup()
 config.initialize_db_setup()
-
+# Use string NORMAL or CONGESTED
+scenario_path, scenario_name = config.get_scenario("NORMAL")
 
 client = pymongo.MongoClient()
-db = client["SUMOSpeedTransitionDB"]
-SUMOTransitions = db["SUMOTransitionsNew"]
+db = client[config.SUMO_DB_NAME]
+SUMOTransitions = db["{0}_{1}".format(config.SUMO_TRANS_COLL, scenario_name)]
 # stvoren coll ovisno o broju intervala
 
 db, client = database.init(config.SUMO_DB_NAME)
@@ -85,15 +86,14 @@ db, client = database.init(config.SUMO_DB_NAME)
 routes_ = list([])
 
 # routes_ = database.selectSkipLimit(db, "SUMORoutesSorted", skip=skip_step, limit=limit)
-route_ids = database.selectAll(db, "SUMORoutesSorted", ret="list")
 
-RoutesFull = database.selectAll(db, "SUMORoutes", ret="list")
+route_ids = database.selectAll(db, "{0}_{1}".format(config.SUMO_SORTED_ROUTES_COLL, scenario_name), ret="list")
 
+RoutesFull = database.selectAll(db, "{0}_{1}".format(config.SUMO_ROUTES_COLL, scenario_name), ret="list")
 
-intervali= list([])
+intervali = list([])
 for br in range(1, 25):
     intervali.append(dict({}))
-
 
 br = 0
 for x in route_ids:
@@ -108,14 +108,14 @@ for x in route_ids:
     br += 1
     routes_ = list([])
 
-    #ovdje rute generiraj i ocisti Rputes_... slozi jos da spremi svaki coloection u zaseban interval
+    # ovdje rute generiraj i ocisti Rputes_... slozi jos da spremi svaki coloection u zaseban interval
 print("izasao")
-#generate_transitions(routes_)
+# generate_transitions(routes_)
 SUMOTransitions.insert_many(intervali)
-#try:
+# try:
 #  SUMOTransitions.insert_many(intervali)
-#except:
- #   print("GRESKA!")
+# except:
+#   print("GRESKA!")
 
 
 database.closeConnection(client=client)

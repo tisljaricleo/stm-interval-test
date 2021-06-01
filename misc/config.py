@@ -67,6 +67,7 @@ def initialize_db_setup():
     global SUMO_GPS_COLL
     global SUMO_TRANS_COLL
     global SUMO_SM_COLLECTION
+    global SUMO_SORTED_ROUTES_COLL
 
     DB_NAME = 'SpeedTransitionDB'
     ROUTE_COLLECTION = 'routesNEW'
@@ -74,8 +75,28 @@ def initialize_db_setup():
     SM_COLLECTION = 'spatialMatrixRWLNEWrel'
     TENSOR_COLLECTION = 'spatialTensors'
 
-    SUMO_GPS_COLL = 'SUMOGPS'
-    SUMO_ROUTES_COLL = 'SUMORoutes'
-    SUMO_TRANS_COLL = 'SUMOTransitionsNew'
-    SUMO_DB_NAME = 'SUMOSpeedTransitionDB'
-    SUMO_SM_COLLECTION = 'SUMOspatialMatrix'
+    SUMO_GPS_COLL = 'SUMO_GPS'
+    SUMO_ROUTES_COLL = 'SUMO_ROUTES'
+    SUMO_SORTED_ROUTES_COLL = 'SUMO_ROUTES_SORTED'
+    SUMO_TRANS_COLL = 'SUMO_TRANSITIONS'
+    SUMO_DB_NAME = 'SUMO_DB'
+    SUMO_SM_COLLECTION = 'SUMO_STMS'
+
+
+def get_scenario(scen_type: str):
+    global SCENARIO_NORMAL_PATH
+    global SCENARIO_NORMAL_NAME
+    global SCENARIO_CONGESTED_PATH
+    global SCENARIO_CONGESTED_NAME
+
+    SCENARIO_NORMAL_PATH = r'.\data\scenario_normal.xml'
+    SCENARIO_NORMAL_NAME = "S_NORMAL"
+    SCENARIO_CONGESTED_PATH = r'.\data\scenario_congested.xml'
+    SCENARIO_CONGESTED_NAME = "S_CONGESTED"
+
+    if scen_type == "NORMAL":
+        return SCENARIO_NORMAL_PATH, SCENARIO_NORMAL_NAME
+    else:
+        return SCENARIO_CONGESTED_PATH, SCENARIO_CONGESTED_NAME
+
+

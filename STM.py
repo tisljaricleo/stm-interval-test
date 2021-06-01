@@ -24,13 +24,13 @@ class SpeedTransitionMatrix(object):
     """
 
     def __init__(self, db, client, collection_name):
-        config.initialize_paths()   # Init of the path variables in config.py file.
-        config.initialize_stm_setup()   # Init of the speed transition matrix related variables in config.py file.
+        config.initialize_paths()  # Init of the path variables in config.py file.
+        config.initialize_stm_setup()  # Init of the speed transition matrix related variables in config.py file.
         self.db = db
         self.client = client
         self.col_name = collection_name
         # self.spatial_matrix = open_pickle(config.SPATIAL_MATRIX_PKL_NAME)
-        self.data = list([])    #
+        self.data = list([])  #
 
     def get_consecutive_data(self, links):
         """Gets STM from consecutive links and saves to self.data object.
@@ -87,7 +87,3 @@ class SpeedTransitionMatrix(object):
                         i_id += 1
             else:
                 print('Arg intervals must be in range 0 - 7 or \'all\'!')
-
-
-
-

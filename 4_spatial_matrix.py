@@ -3,7 +3,7 @@
 
 import numpy as np
 from misc.misc import rtm, get_time
-from misc import database, config##
+from misc import database, config  ##
 import pandas as pd
 
 __author__ = "Leo Tisljaric"
@@ -25,21 +25,25 @@ __status__ = "Development"
 #     return int(speed_limit)
 
 
-
 def generate_spatial_matrix():
     speed_type = config.SPEED_TYPE
 
-    int_query = database.selectDistinct(db=db, collection="SUMOTransitionsNew", attribute="interval", ret='list')
+    # "{0}_{1}".format(config.SUMO_TRANS_COLL, scenario_name)
+
+    int_query = database.selectDistinct(db=db,
+                                        collection="{0}_{1}".format(config.SUMO_TRANS_COLL, scenario_name),
+                                        attribute="interval",
+                                        ret='list')
     intervals = sorted(int_query)
 
     # All unique transitions by origin and destination id
     unique_vals = list(database.groupBy(db=db,
-                                        collection="SUMOTransitionsNew",
+                                        collection="{0}_{1}".format(config.SUMO_TRANS_COLL, scenario_name),
                                         query={'_id': {'origin_id': '$origin_id',
                                                        'destination_id': '$destination_id'}}))
     # List of tuples (origin_id, destination_id)
     ids = list([])
-    for uv in unique_vals:  #tu ne povuće kak treba
+    for uv in unique_vals:  # tu ne povuće kak treba
         # sl_origin = get_speed_limit(uv['_id']['origin_id'])
         # sl_dest = get_speed_limit(uv['_id']['destination_id'])
         #
@@ -59,11 +63,11 @@ def generate_spatial_matrix():
         destination = ids[tr_id][1]
 
         transition = (database.selectSome(db=db,
-                                          collection=config.SUMO_TRANS_COLL,
+                                          collection="{0}_{1}".format(config.SUMO_TRANS_COLL, scenario_name),
                                           query={'origin_id': origin,
                                                  'destination_id': destination}))
         interval_dict = list([])
-        
+
         all_origin_speeds = []
         all_dest_speeds = []
 
@@ -76,12 +80,12 @@ def generate_spatial_matrix():
 
                 orig_speed = rtm(t['origin_' + speed_type + '_speed'], config.RESOLUTION, speed_type)
                 dest_speed = rtm(t['destination_' + speed_type + '_speed'], config.RESOLUTION, speed_type)
-                
+
                 all_origin_speeds.append(orig_speed)
                 all_dest_speeds.append(dest_speed)
 
             transition_matrix = generate_trans_matrix(all_origin_speeds, all_dest_speeds)
-            
+
             all_origin_speeds = []
             all_dest_speeds = []
 
@@ -90,16 +94,14 @@ def generate_spatial_matrix():
 
             interval_dict.append({'stm': data, 'interval_id': i})
 
-
         database.insertOne(db=db,
-                           collection=(config.SUMO_SM_COLLECTION + str(speed_type)),
+                           collection="{0}_{1}".format(config.SUMO_SM_COLLECTION, scenario_name),
                            data={'origin_id': origin,
                                  'destination_id': destination,
                                  'intervals': interval_dict})
 
 
 def generate_trans_matrix(origin_speeds, dest_speeds):
-
     resolution, max_index = config.RESOLUTION, config.MAX_INDEX
 
     t_matrix = np.zeros((max_index, max_index))
@@ -114,11 +116,8 @@ def generate_trans_matrix(origin_speeds, dest_speeds):
                 continue
             ###############################################
 
-
-
             c_route_speed_index = int(origin_speeds[i] / resolution - 1)
             n_route_speed_index = int(dest_speeds[i] / resolution - 1)
-
 
             t_matrix[c_route_speed_index, n_route_speed_index] += 1
         return t_matrix.astype('int').tolist()
@@ -131,6 +130,8 @@ t1 = get_time()
 config.initialize_paths()
 config.initialize_stm_setup()
 config.initialize_db_setup()
+# Use string NORMAL or CONGESTED
+scenario_path, scenario_name = config.get_scenario("NORMAL")
 
 # speed_data = pd.read_csv(r'limits.csv',
 #                          names=['link_id', 'speed_limit'],

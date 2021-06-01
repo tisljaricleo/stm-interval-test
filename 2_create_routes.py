@@ -1,4 +1,3 @@
-
 import json
 import pandas as pd
 import datetime
@@ -24,12 +23,14 @@ t1 = get_time()
 config.initialize_paths()
 config.initialize_stm_setup()
 config.initialize_db_setup()
+# Use string NORMAL or CONGESTED
+scenario_path, scenario_name = config.get_scenario("NORMAL")
 
 db, client = database.init(config.SUMO_DB_NAME)
 
 midnight_time = 1598918400
 
-route_ids = db[config.SUMO_GPS_COLL].find().distinct('id')
+route_ids = db["{0}_{1}".format(config.SUMO_GPS_COLL, scenario_name)].find().distinct('id')
 
 no_trans_counter = 1
 
@@ -37,7 +38,7 @@ for route_id in route_ids:
 
     db_route = dict({})
 
-    route = list(db[config.SUMO_GPS_COLL].find({"id": route_id}).sort("timestep, 1"))
+    route = list(db["{0}_{1}".format(config.SUMO_GPS_COLL, scenario_name)].find({"id": route_id}).sort("timestep, 1"))
 
     points = list([])
     abs_speeds = list([])
@@ -48,7 +49,7 @@ for route_id in route_ids:
     for i in range(0, len(route) - 1):
 
         curr_id = route[i]['lane'].split('_')[0]
-        next_id = route[i+1]['lane'].split('_')[0]
+        next_id = route[i + 1]['lane'].split('_')[0]
 
         if curr_id == next_id:
             # If IDs are the same, save abs and rel speeds.
@@ -99,7 +100,7 @@ for route_id in route_ids:
                           'abs_speed': a_s,
                           'rel_speed': r_s,
                           'interval': interval_sep(time),
-                         'timestep': int(route[i]['timestep'])})
+                          'timestep': int(route[i]['timestep'])})
 
             points.append(point)
 
@@ -122,9 +123,11 @@ for route_id in route_ids:
     db_route["month"] = month
     db_route["year"] = year
 
-    database.insertOne(db=db, collection=config.SUMO_ROUTES_COLL, data=db_route)
+    database.insertOne(db=db,
+                       collection="{0}_{1}".format(config.SUMO_ROUTES_COLL, scenario_name),
+                       data=db_route)
 
 database.closeConnection(client=client)
 
 t2 = get_time()
-print('Exe time: {0}'.format(t2-t1))
+print('Exe time: {0}'.format(t2 - t1))

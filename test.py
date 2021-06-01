@@ -1,5 +1,3 @@
-
-
 from misc import database
 
 db, client = database.init("SUMOSpeedTransitionDB")
