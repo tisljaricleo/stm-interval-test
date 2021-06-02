@@ -113,8 +113,8 @@ for stm_data in all_stm_data:
                                                                                                                     stm_data['origin_id'],
                                                                                                                     stm_data['destination_id']))
 
-            # if dist < 0.33:
-            #     plot_heatmap(stm, str(interval['interval_id']))
+            if 0.33 < dist <= 0.66:
+                plot_heatmap(stm, str(interval['interval_id']))
 
         except ValueError:
             print()
