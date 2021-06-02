@@ -83,7 +83,7 @@ def initialize_db_setup():
     SUMO_SM_COLLECTION = 'SUMO_STMS'
 
 
-def get_scenario(scen_type: str):
+def get_scenario():
     global SCENARIO_NORMAL_PATH
     global SCENARIO_NORMAL_NAME
     global SCENARIO_CONGESTED_PATH
@@ -94,9 +94,19 @@ def get_scenario(scen_type: str):
     SCENARIO_CONGESTED_PATH = r'.\data\scenario_congested.xml'
     SCENARIO_CONGESTED_NAME = "S_CONGESTED"
 
+    # Choose one of the scenario types:
+    scen_type = "NORMAL"
+    # scen_type = "CONGESTED"
+
     if scen_type == "NORMAL":
         return SCENARIO_NORMAL_PATH, SCENARIO_NORMAL_NAME
     else:
         return SCENARIO_CONGESTED_PATH, SCENARIO_CONGESTED_NAME
 
 
+def set_intervals():
+    global INTERVAL_LENGTH      # Sets interval length in seconds.
+    global INTERVAL_NUMBER      # Sets number of intervals.
+
+    INTERVAL_LENGTH = 1800
+    INTERVAL_NUMBER = 4

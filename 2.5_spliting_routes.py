@@ -3,8 +3,9 @@ from misc import config
 
 config.initialize_stm_setup()
 config.initialize_db_setup()
+config.set_intervals()
 # Use string NORMAL or CONGESTED
-scenario_path, scenario_name = config.get_scenario("NORMAL")
+scenario_path, scenario_name = config.get_scenario()
 
 client = pymongo.MongoClient()
 db = client[config.SUMO_DB_NAME]
@@ -22,7 +23,7 @@ def create_intervals(interval_length: int, n_intervals: int):
     return list(range(0, (interval_length * n_intervals) + 1, interval_length))
 
 
-intervals = create_intervals(1800, 4)
+intervals = create_intervals(config.INTERVAL_LENGTH, config.INTERVAL_NUMBER)
 all_routes = list(SumoRoutesCol.find({}, {"_id": 0}))
 route_ids = []
 database_entry = []
@@ -53,44 +54,3 @@ try:
     SumoRoutesSortedCol.insert_many(database_entry)
 except Exception as e:
     print("Database insert error!" + str(e))
-
-
-
-#
-# intervali = list([])
-# for br in range(1, 25):
-#     intervali.append(dict({"data": [], "interval": br}))
-#
-# innerdata = list([])
-# for br in range(1, 25):
-#     innerdata.append(dict({"data": [], "interval": br}))
-#
-# sat = 3600
-# x = 1
-# vrijeme = list([])
-# for i in range(1, 24, x):
-#     vr = sat * i
-#     vrijeme.append(dict({"data": [vr], "vremena": i}))
-#
-# data = list(SumoRoutesCol.find({}, {"_id": 0}))
-# DoljnjeVrijeme = 0
-# brojac = 0
-#
-# for a in vrijeme:
-#     for b in a["data"]:
-#         GornjeVrijeme = b
-#
-#         for x in data:
-#
-#             VrijemeZaUsporediti = x["points"][0]["timestep"]
-#
-#             if DoljnjeVrijeme < VrijemeZaUsporediti <= GornjeVrijeme:
-#                 innerdata[brojac]["data"].append(x["route_id"])
-#
-#         DoljnjeVrijeme = GornjeVrijeme
-#         brojac = brojac + 1
-#
-# try:
-#     SumoRoutesSortedCol.insert_many(innerdata)
-# except:
-#     print("GRESKA!")

@@ -6,24 +6,6 @@ from misc.misc import rtm, get_time
 from misc import database, config  ##
 import pandas as pd
 
-__author__ = "Leo Tisljaric"
-__license__ = "GPL"
-__version__ = "0.0.1"
-__email__ = "ltisljaric@fpz.hr"
-__status__ = "Development"
-
-
-# def get_speed_limit(link_id):
-#     #speed_limit = speed_data[speed_data.link_id == link_id].speed_limit.values
-#     try:
-#         speed_limit = speed_data[speed_data.link_id == str(link_id)].speed_limit.values[0]
-#         #print()
-#         # if speed_limit == 0:  # ako je speed limit nepoznat
-#         #     speed_limit = 60
-#     except:
-#         speed_limit = 0  # ako nema zapisa u csv datoteci
-#     return int(speed_limit)
-
 
 def generate_spatial_matrix():
     speed_type = config.SPEED_TYPE
@@ -96,8 +78,8 @@ def generate_spatial_matrix():
 
         database.insertOne(db=db,
                            collection="{0}_{1}".format(config.SUMO_SM_COLLECTION, scenario_name),
-                           data={'origin_id': origin,
-                                 'destination_id': destination,
+                           data={'origin_id': int(origin),
+                                 'destination_id': int(destination),
                                  'intervals': interval_dict})
 
 
@@ -131,7 +113,7 @@ config.initialize_paths()
 config.initialize_stm_setup()
 config.initialize_db_setup()
 # Use string NORMAL or CONGESTED
-scenario_path, scenario_name = config.get_scenario("NORMAL")
+scenario_path, scenario_name = config.get_scenario()
 
 # speed_data = pd.read_csv(r'limits.csv',
 #                          names=['link_id', 'speed_limit'],

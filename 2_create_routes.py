@@ -24,7 +24,7 @@ config.initialize_paths()
 config.initialize_stm_setup()
 config.initialize_db_setup()
 # Use string NORMAL or CONGESTED
-scenario_path, scenario_name = config.get_scenario("NORMAL")
+scenario_path, scenario_name = config.get_scenario()
 
 db, client = database.init(config.SUMO_DB_NAME)
 
@@ -43,7 +43,6 @@ for route_id in route_ids:
     points = list([])
     abs_speeds = list([])
     rel_speeds = list([])
-    # i = 0
 
     ids = []
     for i in range(0, len(route) - 1):

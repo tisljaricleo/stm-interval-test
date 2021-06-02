@@ -9,12 +9,6 @@ import pymongo
 import numpy as np
 import misc.config as config
 
-__author__ = "Leo Tisljaric"
-__license__ = "GPL"
-__version__ = "0.0.1"
-__email__ = "ltisljaric@fpz.hr"
-__status__ = "Development"
-
 
 def generate_transitions(routes):
     """Generate every transition from routes. Transition is defined as spatial change from link i to link i+1.
@@ -74,7 +68,7 @@ config.initialize_paths()
 config.initialize_stm_setup()
 config.initialize_db_setup()
 # Use string NORMAL or CONGESTED
-scenario_path, scenario_name = config.get_scenario("NORMAL")
+scenario_path, scenario_name = config.get_scenario()
 
 client = pymongo.MongoClient()
 db = client[config.SUMO_DB_NAME]
